@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const cartSchema = new Schema({
-  itemQuantity: { type: Number, default: 0 },
+  itemsQuantity: { type: Number, default: 0 },
   items: {
     type: [
       {

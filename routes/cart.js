@@ -7,7 +7,6 @@ router.get("/", async (req, res) => {
   try {
     const user = req.user;
     const { cart } = await user.populate("cart.items.item");
-
     return res.json(cart);
   } catch (error) {
     console.log(error);
@@ -26,7 +25,7 @@ router.post("/modify", async (req, res) => {
           i.quantity += quantity;
           modified = true;
         }
-        return i;
+        if (i.quantity > 0) return i;
       });
       if (!modified) {
         user.cart.items.push({

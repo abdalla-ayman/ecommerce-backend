@@ -6,6 +6,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const user = req.user;
+    console.log(user);
     const { cart } = await user.populate("cart.items.item");
     return res.json(cart);
   } catch (error) {
@@ -16,27 +17,42 @@ router.get("/", async (req, res) => {
 
 router.post("/modify", async (req, res) => {
   try {
-    const { itemId, quantity } = req.body;
+    const { itemId, quantity, action } = req.body;
+    let resultQuantity = 0;
     let user = req.user;
     if (user.cart) {
       let modified = false;
-      user.cart.items = user.cart.items.map((i) => {
+      user.cart.items = user.cart.items.filter((i) => {
         if (i.item == itemId) {
-          i.quantity += quantity;
+          if (action == "replace") {
+            resultQuantity = quantity - i.quantity;
+            i.quantity = quantity;
+          }
+          if (action == "update") {
+            i.quantity += quantity;
+            resultQuantity = quantity;
+          }
           modified = true;
-        }
-        if (i.quantity > 0) return i;
+          if (action == "delete") {
+            user.cart.itemsQuantity -= i.quantity;
+            if (user.cart.itemsQuantity < 0) user.cart = null;
+          } else {
+            user.cart.itemsQuantity += resultQuantity;
+            return i;
+          }
+        } else return i;
       });
-      if (!modified) {
+      if (!modified && action != "delete") {
         user.cart.items.push({
           item: itemId,
           quantity,
         });
+        user.cart.itemsQuantity += quantity;
       }
-      user.cart.itemsQuantity += quantity;
+
       await user.save();
       return res.json(user.cart);
-    } else {
+    } else if (action != "delete") {
       user.cart = {
         itemsQuantity: quantity,
         items: [

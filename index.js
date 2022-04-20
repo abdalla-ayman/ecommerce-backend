@@ -4,8 +4,9 @@ const cors = require("cors");
 const UserRoute = require("./routes/user");
 const ProductRoute = require("./routes/product");
 const CartRoute = require("./routes/cart");
-const authorize = require("./middlewares/AuthMiddleware");
+const isAuthorized = require("./middlewares/AuthMiddleware");
 const path = require("path");
+const authorize = require("./middlewares/Authorize");
 require("dotenv").config();
 
 const app = express();
@@ -20,6 +21,7 @@ mongoose.connect(process.env.DATA_BASE_URL, (error) => {
   else console.log("connected to the database");
 });
 
+app.use(isAuthorized);
 app.use("/user", UserRoute);
 app.use("/product", ProductRoute);
 app.use("/cart", authorize, CartRoute);

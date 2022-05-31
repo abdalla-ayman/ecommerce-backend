@@ -3,19 +3,21 @@ const Product = require("../models/product");
 const fs = require("fs/promises");
 const upload = require("../multer");
 const path = require("path");
+const OnlyAdmin = require("../middlewares/OnlyAdmin");
 require("dotenv").config();
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const products = await Product.find();
+    const category = req.headers.category || null;
+    const products = await Product.find({ category });
     return res.json(products);
   } catch (error) {
     console.log(error);
   }
 });
 
-router.post("/create", upload, async (req, res) => {
+router.post("/create", OnlyAdmin, upload, async (req, res) => {
   try {
     const { name, price, category } = req.body;
     const { filename: imgURL } = req.file;
@@ -28,14 +30,16 @@ router.post("/create", upload, async (req, res) => {
     if (product) {
       return res.json({ message: "Product Created" });
     } else {
+      console.log("huh?");
       return res.status(500).json({ message: "Something Went Wrong" });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "Something Went Wrong" });
   }
 });
 
-router.delete("/", async (req, res) => {
+router.delete("/", OnlyAdmin, async (req, res) => {
   try {
     const { id: _id } = req.headers;
     const deletedProduct = await Product.findByIdAndDelete({ _id });
@@ -53,7 +57,7 @@ router.delete("/", async (req, res) => {
   }
 });
 
-router.delete("/all", async (req, res) => {
+router.delete("/all", OnlyAdmin, async (req, res) => {
   try {
     const products = await Product.find();
     await Product.deleteMany();

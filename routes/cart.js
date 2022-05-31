@@ -6,8 +6,8 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const user = req.user;
-    console.log(user);
-    const { cart } = await user.populate("cart.items.item");
+    let { cart } = await user.populate("cart.items.item");
+
     return res.json(cart);
   } catch (error) {
     console.log(error);

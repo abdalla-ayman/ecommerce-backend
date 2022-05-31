@@ -7,7 +7,7 @@ const productSchema = new Schema({
   imgURL: { type: String, required: true },
   category: {
     type: String,
-    enum: ["1", "2"],
+    enum: ["shoe", "shirt", "short", "hat"],
     required: true,
   },
 });

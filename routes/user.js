@@ -11,9 +11,7 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
     let user = await User.findOne({ email });
     if (!user)
-      return res
-        .status(400)
-        .json({ message: "User dose not exist try to Signup" });
+      return res.status(400).json({ message: "Incorrect email try to signup" });
     const dosePasswordsMatch = await bcrypt.compare(password, user.password);
     user.password = undefined;
     if (dosePasswordsMatch) {
@@ -24,7 +22,7 @@ router.post("/login", async (req, res) => {
         message: "User LoggedIn",
       });
     } else {
-      return res.status(400).json({ message: "Incorrect Password" });
+      return res.status(400).json({ message: "Incorrect password" });
     }
   } catch (error) {
     console.log(error);
@@ -34,6 +32,8 @@ router.post("/login", async (req, res) => {
 router.post("/signup", async (req, res) => {
   try {
     const { firstname, lastname, password, email } = req.body;
+    if (!firstname || !lastname || !password || !email)
+      return res.status(400).json({ message: "missing credentials" });
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = await User.create({
@@ -45,7 +45,9 @@ router.post("/signup", async (req, res) => {
     return res.json({ user: newUser, message: "User Created" });
   } catch (error) {
     if (error.code == 11000) {
-      return res.status(400).json({ message: "Used Email" });
+      return res
+        .status(400)
+        .json({ message: "This email is already used try diffrent one" });
     }
   }
 });

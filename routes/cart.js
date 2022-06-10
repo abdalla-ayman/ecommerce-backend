@@ -83,4 +83,13 @@ router.delete("/", async (req, res) => {
   }
 });
 
+router.get("/checkout", async (req, res) => {
+  try {
+    res.status(400).json({ message: "This service is not available Now" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something Went Worng" });
+  }
+});
+
 module.exports = router;

@@ -36,7 +36,7 @@ app.get("/validate-token", authorize, (req, res) => {
 });
 
 app.get("/*", (req, res) => {
-  res.sendFile("index.html");
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.listen(PORT, () =>

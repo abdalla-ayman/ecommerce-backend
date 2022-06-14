@@ -17,7 +17,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 const PORT = process.env.PORT || 5000;
 
-console.log(process.env.DATA_BASE_URL);
 mongoose.connect(process.env.DATA_BASE_URL, (error) => {
   if (error) console.log(error);
   else console.log("connected to the database");

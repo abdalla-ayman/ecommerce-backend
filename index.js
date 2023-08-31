@@ -18,9 +18,11 @@ app.use(express.urlencoded({ extended: false }));
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(process.env.DATA_BASE_URL, (error) => {
+  console.log(process.env.DATA_BASE_URL)
   if (error) console.log(error);
   else console.log("connected to the database");
 });
+
 
 app.use(isAuthorized);
 app.use("/user", UserRoute);
